@@ -92,7 +92,7 @@ if [ $rCodeFinalTar -ne 0 ]; then
 fi
 
 # Upload the archive
-write_log "Upload \"${BACKUP_FILE}\" into \"${STORAGE_ACCOUNT_NAME}\"/\"${STORAGE_ACCOUNT_CONTAINER}\"."
+write_log "Upload \"${BACKUP_FILE}\" into \"https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}\"."
 azcopy \
   --source ${BACKUP_FILE} \
   --destination "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}" \

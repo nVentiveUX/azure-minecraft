@@ -58,7 +58,7 @@ After=rc-local.service
 [Service]
 WorkingDirectory=$INSTALL_DIR
 ExecStart=/usr/bin/java -Xms$memoryAllocs -Xmx$memoryAllocx -jar $INSTALL_DIR/server.jar nogui
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
 KillMode=process
 Restart=on-failure
 

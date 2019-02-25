@@ -184,8 +184,8 @@ az group create \
 
 printf "Create sta${AZ_LB_DNS} Storage Account...\\n"
 az storage account create \
-    --resource-group "${AZ_APP_RG}" \
-    --name "staAZ_LB_DNS" \
+    --resource-group "${AZ_VM_RG}" \
+    --name "sta${AZ_LB_DNS}" \
     --location ${AZ_LOCATION} \
     --https-only true \
     --kind StorageV2 \
@@ -292,7 +292,7 @@ az vm create \
     --image "UbuntuLTS" \
     --size "Standard_B1ms" \
     --nics "${AZ_VM}-nic" \
-    --storage-sku "Standard_SSD" \
+    --storage-sku "StandardSSD_LRS" \
     --admin-username "yandolfat" \
     --ssh-key-value "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCe0lgCF/ZKiUJnl8gbSQSKvzIiWZM8ZouxUxjmXGJIXvacmZCC/Ou7UvX5JMQFqUcYe63BSGOz93X2r4e17M++JbOR+ShloGS+4+w+wu6MAYaiVIC6/PmhSfyzFXEWuE+dLadNwJMF8ePUXqwYZntRy5Gahu1wYSkqaif3TNsDRCDYcd0viCOEmGN+NYeoNJwGQ9HIWJ29sY/BUZJWEVB0ZweTvNqwtl3bMvY/JHmEmEIYwdRcdROPEPmxcuBH81Tt2fsD9V7DYhyvz2lQPVJD++3jIZX2i9sPQj8SVJbo23xOZZykVIKU7WaztBtPPz3RdytBiyQ8sgNwKLbJX7Vv0+qY1no4xUnKwJPc5zfikje4rYxTksjIRg7igMNrCFGWZA75hb+Nm+HhQsKqVHtOIaw3P6j6slysQQ5MOQYTqg7k60yxTRGTv8Y6V45jrYWQg+vhKO4gzVTKsqrqJTRhJXU3vv//1NPW7ucNlNPCF8n0RyjXue6Y1Xr8rZv5QheLZvcHumd23pA+Z6aRA/Hd2VINy00PQz9dscOpWHpUiiu4HMPHLcLdlhaVMFr2otwB2749xHciZFCsWnprMGX6V3lVGHQ3OFfIBFz1ZVFG+eAbXmZZepdtwVJDidXDfvzAtMol/+PwVVUJgpA1a1dryyZkg9k2FbO1bSVolvmkpQ== Yves ANDOLFATTO" \
     --output none

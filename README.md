@@ -30,7 +30,7 @@ None.
 
 ```bash
 (
-rm -rf ~/azure-gaming
+rm -rf ~/azure-minecraft
 git clone https://github.com/nVentiveUX/azure-minecraft.git
 cd ~/azure-minecraft
 
@@ -45,7 +45,7 @@ cd ~/azure-minecraft
     --rg-vm="rg-inf-minecraft-001" \
     --vm-name="vm-minecraft-001" \
     --lb-name="lb-minecraft-001" \
-    --dns-name="lebonserveur-001"
+    --dns-name="lebonserveur001"
 )
 ```
 
@@ -83,6 +83,12 @@ SHELL=/bin/bash
 EOF
 )
 ```
+
+### Play
+
+Connect on ```<dns-name>.westeurope.cloudapp.azure.com:25565```
+
+The full list of operator commands can be found on the Minecraft wiki:  http://minecraft.gamepedia.com/Commands#Summary_of_commands
 
 ## Delete the Azure infrastructure
 
