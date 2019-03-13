@@ -42,25 +42,18 @@ cleanup() {
 trap cleanup EXIT
 
 # Status codes
-rCodeInstallAzCopy=0
 rCodeBackup=0
 rCodeFinalTar=0
 rCodeUpload=0
 
 # Install AzCopy
-if [ ! -r /usr/bin/azcopy ]; then
+if [ ! -r /azcopy ]; then
   write_log "Install AzCopy..."
-  wget -O /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopylinux64"
-  mkdir -p /tmp/azcopy
-  tar -xf /tmp/azcopy.tar.gz -C /tmp/azcopy
-  sudo /tmp/azcopy/install.sh || rCodeInstallAzCopy=$?
-  rm -rf /tmp/azcopy
+  wget -O /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux" \
+  mkdir -p /tmp/azcopy \
+  tar -xzvf /tmp/azcopy.tar.gz --strip-components=1 --wildcards 'azcopy_linux_amd64_*/azcopy' -C / \
   rm -f /tmp/azcopy.tar.gz
   write_log "AzCopy installed."
-fi
-if [ $rCodeInstallAzCopy -ne 0 ]; then
-  write_log "AzCopy installation failed!!!"
-  exit 2
 fi
 
 # Backup begin
@@ -93,7 +86,7 @@ fi
 
 # Upload the archive
 write_log "Upload \"${BACKUP_FILE}\" into \"https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}\"."
-azcopy \
+/azcopy \
   --source ${BACKUP_FILE} \
   --destination "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}" \
   --dest-key "${STORAGE_ACCOUNT_KEY}" >/dev/null 2>&1 || rCodeUpload=$?
