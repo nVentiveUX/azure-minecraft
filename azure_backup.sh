@@ -49,8 +49,8 @@ rCodeUpload=0
 # Install AzCopy
 if [ ! -r /azcopy ]; then
   write_log "Install AzCopy..."
-  wget -O /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux" \
-  tar -xzvf /tmp/azcopy.tar.gz --strip-components=1 --wildcards 'azcopy_linux_amd64_*/azcopy' -C / \
+  wget -O /tmp/azcopy.tar.gz "https://aka.ms/downloadazcopy-v10-linux"
+  tar -xzvf /tmp/azcopy.tar.gz -C / --strip-components=1 --wildcards 'azcopy_linux_amd64_*/azcopy'
   rm -f /tmp/azcopy.tar.gz
   write_log "AzCopy installed."
 fi
