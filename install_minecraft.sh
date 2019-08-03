@@ -19,7 +19,7 @@ GROUP=minecraft
 UUID_URL=https://api.mojang.com/users/profiles/minecraft/$1
 
 # Screen scrape the server jar location from the Minecraft server download page
-SERVER_JAR_URL=`curl -L https://minecraft.net/en-us/download/server/ | grep 'Download <a' | cut -d '"' -f2`
+SERVER_JAR_URL=`curl -L https://minecraft.net/en-us/download/server/ | grep '<a href="https://launcher.mojang.com' | cut -d '"' -f2`
 
 apt-get update
 apt-get install -y software-properties-common
