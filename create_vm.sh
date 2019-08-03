@@ -290,7 +290,7 @@ az vm create \
     --name "${AZ_VM}" \
     --resource-group "${AZ_VM_RG}" \
     --image "UbuntuLTS" \
-    --size "Standard_B1ms" \
+    --size "Standard_A2_v2" \
     --nics "${AZ_VM}-nic" \
     --storage-sku "StandardSSD_LRS" \
     --admin-username "yandolfat" \
