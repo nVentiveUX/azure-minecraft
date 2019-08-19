@@ -207,6 +207,14 @@ az storage container policy create \
     --container-name backup-001 \
     --name rw \
     --permissions rw \
+    --expiry `date -u -d "20 years" '+%Y-%m-%dT%H:%MZ'`
+    --start `date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ'`
+    --output none
+
+printf "Generate SAS Token to access the backup-001 blob container...\\n"
+az storage container generate-sas \
+    --name backup-001 \
+    --policy-name rw \
     --output none
 
 printf "Create ${AZ_LB_DNS}.${AZ_LOCATION}.cloudapp.azure.com basic public IP address...\\n"
@@ -315,3 +323,5 @@ az vm create \
     --ssh-key-value "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCe0lgCF/ZKiUJnl8gbSQSKvzIiWZM8ZouxUxjmXGJIXvacmZCC/Ou7UvX5JMQFqUcYe63BSGOz93X2r4e17M++JbOR+ShloGS+4+w+wu6MAYaiVIC6/PmhSfyzFXEWuE+dLadNwJMF8ePUXqwYZntRy5Gahu1wYSkqaif3TNsDRCDYcd0viCOEmGN+NYeoNJwGQ9HIWJ29sY/BUZJWEVB0ZweTvNqwtl3bMvY/JHmEmEIYwdRcdROPEPmxcuBH81Tt2fsD9V7DYhyvz2lQPVJD++3jIZX2i9sPQj8SVJbo23xOZZykVIKU7WaztBtPPz3RdytBiyQ8sgNwKLbJX7Vv0+qY1no4xUnKwJPc5zfikje4rYxTksjIRg7igMNrCFGWZA75hb+Nm+HhQsKqVHtOIaw3P6j6slysQQ5MOQYTqg7k60yxTRGTv8Y6V45jrYWQg+vhKO4gzVTKsqrqJTRhJXU3vv//1NPW7ucNlNPCF8n0RyjXue6Y1Xr8rZv5QheLZvcHumd23pA+Z6aRA/Hd2VINy00PQz9dscOpWHpUiiu4HMPHLcLdlhaVMFr2otwB2749xHciZFCsWnprMGX6V3lVGHQ3OFfIBFz1ZVFG+eAbXmZZepdtwVJDidXDfvzAtMol/+PwVVUJgpA1a1dryyZkg9k2FbO1bSVolvmkpQ== Yves ANDOLFATTO" \
     --output none
 printf "Done.\\n\\n"
+
+# TOTO: Print the SAS Token
