@@ -189,6 +189,8 @@ az storage account create \
     --location ${AZ_LOCATION} \
     --https-only true \
     --kind StorageV2 \
+    --encryption-services blob \
+    --access-tier Cool \
     --sku Standard_LRS \
     --output none
 
@@ -290,7 +292,7 @@ az vm create \
     --name "${AZ_VM}" \
     --resource-group "${AZ_VM_RG}" \
     --image "UbuntuLTS" \
-    --size "Standard_D2s" \
+    --size "Standard_B2s" \
     --accelerated-networking "true" \
     --nics "${AZ_VM}-nic" \
     --storage-sku "StandardSSD_LRS" \
