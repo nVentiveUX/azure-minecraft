@@ -207,8 +207,8 @@ az storage container policy create \
     --account-name "sta${AZ_LB_DNS}" \
     --name rw \
     --permissions rw \
-    --expiry `date -u -d "20 years" '+%Y-%m-%dT%H:%MZ'`
-    --start `date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ'`
+    --expiry `date -u -d "20 years" '+%Y-%m-%dT%H:%MZ'` \
+    --start `date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ'` \
     --output none
 
 printf "Generate SAS Token to access the backup-001 blob container...\\n"
