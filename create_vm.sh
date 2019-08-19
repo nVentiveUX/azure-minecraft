@@ -212,11 +212,12 @@ az storage container policy create \
     --output none
 
 printf "Generate SAS Token to access the backup-001 blob container...\\n"
-az storage container generate-sas \
+sas=`az storage container generate-sas \
     --name backup-001 \
     --account-name "sta${AZ_LB_DNS}" \
     --policy-name rw \
-    --output none
+    --https-only \
+    --output tsv`
 
 printf "Create ${AZ_LB_DNS}.${AZ_LOCATION}.cloudapp.azure.com basic public IP address...\\n"
 az network public-ip create \
@@ -325,4 +326,4 @@ az vm create \
     --output none
 printf "Done.\\n\\n"
 
-# TOTO: Print the SAS Token
+echo -e "\e[31mSAS Token: ${sas}\e[0m"
