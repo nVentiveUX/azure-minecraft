@@ -28,7 +28,7 @@ None.
 * The only requirement is to have AZ CLI installed. You can use the [Azure Cloud Shell](https://shell.azure.com/)
 * Do not forget to update the options values of the below example.
 
-```bash
+```shell
 (
 rm -rf ~/azure-minecraft
 git clone https://github.com/nVentiveUX/azure-minecraft.git
@@ -53,7 +53,7 @@ cd ~/azure-minecraft
 
 * Connect using SSH on port 443
 
-```sh
+```shell
 (
 sudo apt update && sudo apt dist-upgrade -Vy &&
 wget -O install_minecraft.sh "https://github.com/nVentiveUX/azure-minecraft/raw/master/install_minecraft.sh" &&
@@ -65,7 +65,7 @@ sudo reboot
 ```
 ### Set-up the backup system
 
-```sh
+```shell
 (
 STORAGE_ACCOUNT_NAME=""
 STORAGE_ACCOUNT_KEY=""
@@ -90,8 +90,14 @@ Connect on ```<dns-name>.westeurope.cloudapp.azure.com:25565```
 
 The full list of operator commands can be found on the Minecraft wiki:  http://minecraft.gamepedia.com/Commands#Summary_of_commands
 
+### Get the logs
+
+```shell
+journalctl -exu minecraft-server
+```
+
 ## Delete the Azure infrastructure
 
-```bash
+```shell
 az group delete --name rg-inf-minecraft-001
 ```
