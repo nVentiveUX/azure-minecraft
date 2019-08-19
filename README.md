@@ -68,7 +68,7 @@ sudo reboot
 ```shell
 (
 STORAGE_ACCOUNT_NAME="stalebonserveur001"
-STORAGE_ACCOUNT_KEY=""
+STORAGE_SAS_TOKEN=""
 STORAGE_ACCOUNT_CONTAINER="backup-001"
 
 printf "Set-up \"/etc/cron.d/minecraft\" backup system...\\n"
@@ -79,7 +79,7 @@ cat <<EOF | sudo tee /etc/cron.d/minecraft >/dev/null 2>&1
 SHELL=/bin/bash
 # m h dom mon dow user    command
 # Backup
-0 5 * * *  root  /usr/share/minecraft/maintenance/azure_backup.sh "$STORAGE_ACCOUNT_NAME" "$STORAGE_ACCOUNT_KEY" "$STORAGE_ACCOUNT_CONTAINER" >/dev/null 2>&1
+0 5 * * *  root  /usr/share/minecraft/maintenance/azure_backup.sh "$STORAGE_ACCOUNT_NAME" "$STORAGE_SAS_TOKEN" "$STORAGE_ACCOUNT_CONTAINER" >/dev/null 2>&1
 EOF
 )
 ```
