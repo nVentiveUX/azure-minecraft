@@ -291,6 +291,7 @@ az vm create \
     --resource-group "${AZ_VM_RG}" \
     --image "UbuntuLTS" \
     --size "Standard_D2s_v3" \
+    --accelerated-networking "true" \
     --nics "${AZ_VM}-nic" \
     --storage-sku "StandardSSD_LRS" \
     --admin-username "yandolfat" \
