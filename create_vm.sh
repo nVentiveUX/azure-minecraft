@@ -194,6 +194,21 @@ az storage account create \
     --sku Standard_LRS \
     --output none
 
+# TOTO: Get access key and save into env varable (AZURE_STORAGE_ACCOUNT/AZURE_STORAGE_KEY)
+
+printf "Create backup-001 blob container...\\n"
+az storage container create \
+    --name "backup-001" \
+    --public-access off \
+    --output none
+
+printf "Create a ReadWrite policy for backup-001 blob container...\\n"
+az storage container policy create \
+    --container-name backup-001 \
+    --name rw \
+    --permissions rw \
+    --output none
+
 printf "Create ${AZ_LB_DNS}.${AZ_LOCATION}.cloudapp.azure.com basic public IP address...\\n"
 az network public-ip create \
     --name "${AZ_LB}-public-ip" \
