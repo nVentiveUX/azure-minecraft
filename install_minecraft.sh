@@ -19,11 +19,11 @@ GROUP=minecraft
 UUID_URL=https://api.mojang.com/users/profiles/minecraft/$1
 
 # Screen scrape the server jar location from the Minecraft server download page
-SERVER_JAR_URL=`curl -L https://minecraft.net/en-us/download/server/ | grep '<a href="https://launcher.mojang.com' | cut -d '"' -f2`
+SERVER_JAR_URL="curl -L https://minecraft.net/en-us/download/server/ | grep -Eo \"(http|https)://[a-zA-Z0-9./?=_-]*\" | sort | uniq | grep launcher"
 
-apt-get update
-apt-get install -y software-properties-common
-apt-get install -y default-jdk
+apt update
+apt install -y software-properties-common
+apt install -y default-jdk
 
 # Create user and install folder+
 printf "Create $USER user...\\n"
@@ -33,7 +33,7 @@ mkdir -pv $INSTALL_DIR
 
 # Download the server jar
 printf "Download $INSTALL_DIR/server.jar...\\n"
-wget -q "$SERVER_JAR_URL" -O $INSTALL_DIR/server.jar
+wget -q `eval $SERVER_JAR_URL` -O $INSTALL_DIR/server.jar
 
 # Set permissions on install folder
 chown -R $USER $INSTALL_DIR
@@ -103,4 +103,3 @@ chown $USER:$GROUP $INSTALL_DIR/server.properties
 systemctl daemon-reload
 systemctl enable minecraft-server
 systemctl start minecraft-server
-
