@@ -85,10 +85,9 @@ fi
 
 # Upload the archive
 write_log "Upload \"${BACKUP_FILE}\" into \"https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}\"."
-/azcopy \
-  --source ${BACKUP_FILE} \
-  --destination "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}" \
-  --dest-key "${STORAGE_ACCOUNT_KEY}" >/dev/null 2>&1 || rCodeUpload=$?
+/azcopy copy \
+  "${BACKUP_FILE}" \
+  "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}?${STORAGE_ACCOUNT_KEY}" >/dev/null 2>&1 || rCodeUpload=$?
 if [ $rCodeUpload -ne 0 ]; then
   write_log "Unable to upload the final archive into Azure!"
   write_log "!!!! BACKUP FAILED !!!!"
