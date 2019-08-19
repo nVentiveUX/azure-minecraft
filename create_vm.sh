@@ -186,7 +186,7 @@ printf "Create sta${AZ_LB_DNS} Storage Account...\\n"
 az storage account create \
     --resource-group "${AZ_VM_RG}" \
     --name "sta${AZ_LB_DNS}" \
-    --location ${AZ_LOCATION} \
+    --location "${AZ_LOCATION}" \
     --https-only true \
     --kind StorageV2 \
     --encryption-services blob \
@@ -194,17 +194,17 @@ az storage account create \
     --sku Standard_LRS \
     --output none
 
-# TOTO: Get access key and save into env varable (AZURE_STORAGE_ACCOUNT/AZURE_STORAGE_KEY)
-
 printf "Create backup-001 blob container...\\n"
 az storage container create \
-    --name "backup-001" \
+    --name backup-001 \
+    --account-name "sta${AZ_LB_DNS}" \
     --public-access off \
     --output none
 
 printf "Create a ReadWrite policy for backup-001 blob container...\\n"
 az storage container policy create \
     --container-name backup-001 \
+    --account-name "sta${AZ_LB_DNS}" \
     --name rw \
     --permissions rw \
     --expiry `date -u -d "20 years" '+%Y-%m-%dT%H:%MZ'`
@@ -214,6 +214,7 @@ az storage container policy create \
 printf "Generate SAS Token to access the backup-001 blob container...\\n"
 az storage container generate-sas \
     --name backup-001 \
+    --account-name "sta${AZ_LB_DNS}" \
     --policy-name rw \
     --output none
 
