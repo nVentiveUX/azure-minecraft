@@ -1,7 +1,7 @@
 #!/bin/bash
 # Backup files script for Ubuntu on Azure
 # $1 = STORAGE_ACCOUNT_NAME
-# $2 = STORAGE_ACCOUNT_KEY
+# $2 = STORAGE_SAS_TOKEN
 # $3 = STORAGE_ACCOUNT_CONTAINER
 
 set -eu -o pipefail
@@ -11,7 +11,7 @@ BACKUP_DIR="/var/backups/minecraft"
 FILES_DIR="/srv/minecraft_server"
 LOG_DIR="/var/log/minecraft"
 STORAGE_ACCOUNT_NAME=$1
-STORAGE_ACCOUNT_KEY=$2
+STORAGE_SAS_TOKEN=$2
 STORAGE_ACCOUNT_CONTAINER=$3
 #-------------------------------------------------------------------------------
 
@@ -87,7 +87,7 @@ fi
 write_log "Upload \"${BACKUP_FILE}\" into \"https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}\"."
 /azcopy copy \
   "${BACKUP_FILE}" \
-  "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}?${STORAGE_ACCOUNT_KEY}" >/dev/null 2>&1 || rCodeUpload=$?
+  "https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${STORAGE_ACCOUNT_CONTAINER}/${BACKUP_FILE}?${STORAGE_SAS_TOKEN}" >/dev/null 2>&1 || rCodeUpload=$?
 if [ $rCodeUpload -ne 0 ]; then
   write_log "Unable to upload the final archive into Azure!"
   write_log "!!!! BACKUP FAILED !!!!"
