@@ -18,7 +18,7 @@ STORAGE_ACCOUNT_CONTAINER=$3
 # Init
 TMPDIR=$(mktemp -d /tmp/backup.XXXXXX)
 BASENAME=$(basename $0)
-TIMESTAMP=$(date +%s)-$(date "+%F")
+TIMESTAMP=$(date "+%A")
 BACKUP_FILE="${BACKUP_DIR}/full-backup-${TIMESTAMP}.tar.xz"
 LOGFILE="${LOG_DIR}/${BASENAME}.log"
 
