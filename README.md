@@ -67,9 +67,9 @@ sudo reboot
 
 ```shell
 (
-STORAGE_ACCOUNT_NAME=""
+STORAGE_ACCOUNT_NAME="stalebonserveur001"
 STORAGE_ACCOUNT_KEY=""
-STORAGE_ACCOUNT_CONTAINER=""
+STORAGE_ACCOUNT_CONTAINER="backup-001"
 
 printf "Set-up \"/etc/cron.d/minecraft\" backup system...\\n"
 sudo mkdir -p /usr/share/minecraft/maintenance
