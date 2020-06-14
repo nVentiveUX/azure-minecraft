@@ -6,7 +6,7 @@ PROGNAME="$(basename "$0")"
 
 # Parse arguments
 ARGS=$(getopt \
-    --options s:l:g:v:s:n:r:m:b:d \
+    --options s:l:g:v:n:u:r:m:b:d \
     --longoptions subscription:,location:,rg-vnet:,vnet-name:,subnet-name:,subnet:,rg-vm:,vm-name:,lb-name:,dns-name: \
     -n "${PROGNAME}" -- "$@")
 eval set -- "${ARGS}"
@@ -45,12 +45,12 @@ while true; do
         shift 2
         continue
     ;;
-    '-s'|'--subnet-name')
+    '-n'|'--subnet-name')
         AZ_VNET_SUBNET_NAME="$2"
         shift 2
         continue
     ;;
-    '-n'|'--subnet')
+    '-u'|'--subnet')
         AZ_VNET_SUBNET="$2"
         shift 2
         continue
@@ -152,23 +152,28 @@ if [[ -z $AZ_LB_DNS ]]; then
     exit 1
 fi
 
-printf "Switch to ${AZ_SUBSCRIPTION_ID} subscription...\\n"
+printf "Switch to %s subscription...\\n" "$(az account show --subscription "${AZ_SUBSCRIPTION_ID}"  --query name --output tsv)"
 az account set --subscription "${AZ_SUBSCRIPTION_ID}" --output none
 
-if ! az network vnet show --resource-group ${AZ_VNET_RG} --name ${AZ_VNET} --output none; then
-    printf "Create ${AZ_VNET_RG} resource group...\\n"
+if ! az network vnet show --subscription "${AZ_SUBSCRIPTION_ID}" --resource-group ${AZ_VNET_RG} --name ${AZ_VNET} --output none; then
+    printf "Create %s resource group...\\n" "${AZ_VNET_RG}"
     az group create \
         --location "${AZ_LOCATION}" \
-        --name "${AZ_VNET_RG}"
+        --subscription "${AZ_SUBSCRIPTION_ID}" \
+        --name "${AZ_VNET_RG}" \
+        --output none
 
-    printf "Create a new 10.1.0.0/16 VNET named ${AZ_VNET}...\\n"
+    printf "Create a new 10.1.0.0/16 VNET named %s...\\n" "${AZ_VNET}"
     az network vnet create \
+        --location "${AZ_LOCATION}" \
+        --subscription "${AZ_SUBSCRIPTION_ID}" \
         --resource-group "${AZ_VNET_RG}" \
         --name "${AZ_VNET}" \
-        --address-prefix "10.1.0.0/16"
+        --address-prefix "10.1.0.0/16" \
+        --output none
 fi
 
-printf "Create a new ${AZ_VNET_SUBNET} subnet named ${AZ_VNET_SUBNET_NAME}...\\n"
+printf "Create a new %s subnet named %s...\\n" "${AZ_VNET_SUBNET}" "${AZ_VNET_SUBNET_NAME}"
 az network vnet subnet create \
     --resource-group "${AZ_VNET_RG}" \
     --vnet-name "${AZ_VNET}" \
@@ -176,61 +181,74 @@ az network vnet subnet create \
     --address-prefix "${AZ_VNET_SUBNET}" \
     --output none
 
-printf "Create ${AZ_VM_RG} resource group...\\n"
+printf "Create %s resource group...\\n" "${AZ_VM_RG}"
 az group create \
     --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_VM_RG}" \
     --output none
 
-printf "Create sta${AZ_LB_DNS} Storage Account...\\n"
+printf "Create sta%s%s Storage Account...\\n" "${AZ_LB_DNS}" "${AZ_LOCATION}"
 az storage account create \
-    --resource-group "${AZ_VM_RG}" \
-    --name "sta${AZ_LB_DNS}" \
     --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
+    --resource-group "${AZ_VM_RG}" \
+    --name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --https-only true \
     --kind StorageV2 \
     --encryption-services blob \
-    --access-tier Cool \
+    --access-tier Hot \
     --sku Standard_LRS \
     --output none
 
 printf "Create backup-001 blob container...\\n"
 az storage container create \
     --name backup-001 \
-    --account-name "sta${AZ_LB_DNS}" \
+    --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --public-access off \
     --output none
 
-printf "Create a ReadWrite policy for backup-001 blob container...\\n"
+printf "Create a ReadWriteList policy for backup-001 blob container...\\n"
 az storage container policy create \
     --container-name backup-001 \
-    --account-name "sta${AZ_LB_DNS}" \
-    --name rw \
-    --permissions rw \
-    --expiry `date -u -d "20 years" '+%Y-%m-%dT%H:%MZ'` \
-    --start `date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ'` \
+    --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
+    --name rwl \
+    --permissions rwl \
+    --expiry "$(date -u -d "100 years" '+%Y-%m-%dT%H:%MZ')" \
+    --start "$(date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ')" \
     --output none
 
 printf "Generate SAS Token to access the backup-001 blob container...\\n"
-sas=`az storage container generate-sas \
+sas=$(az storage container generate-sas \
     --name backup-001 \
-    --account-name "sta${AZ_LB_DNS}" \
-    --policy-name rw \
+    --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
+    --policy-name rwl \
     --https-only \
-    --output tsv`
+    --output tsv)
 
-printf "Create ${AZ_LB_DNS}.${AZ_LOCATION}.cloudapp.azure.com basic public IP address...\\n"
+printf "Deny public access for backup-001 blob container...\\n"
+az storage container set-permission \
+    --name backup-001 \
+    --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
+    --public-access off \
+    --output none
+
+printf "Create %s.%s.cloudapp.azure.com basic public IP address...\\n" "${AZ_LB_DNS}" "${AZ_LOCATION}"
 az network public-ip create \
+    --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_LB}-public-ip" \
     --resource-group "${AZ_VM_RG}" \
-    --allocation-method "Dynamic" \
+    --allocation-method "static" \
     --sku "Basic" \
     --version "IPv4" \
     --dns-name "${AZ_LB_DNS}" \
     --output none
 
-printf "Create ${AZ_LB} basic load balancer...\\n"
+printf "Create %s basic load balancer...\\n" "${AZ_LB}"
 az network lb create \
+    --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_LB}" \
     --resource-group "${AZ_VM_RG}" \
     --public-ip-address "${AZ_LB}-public-ip" \
@@ -261,8 +279,10 @@ az network lb inbound-nat-rule create \
     --protocol "tcp" \
     --output none
 
-printf "Create NSG ${AZ_VM}-nsg...\\n"
+printf "Create NSG %s-nsg...\\n" "${AZ_VM}"
 az network nsg create \
+    --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_VM}-nsg" \
     --resource-group "${AZ_VM_RG}" \
     --output none
@@ -301,29 +321,43 @@ az network nsg rule create \
 
 printf "Create NIC...\\n"
 az network nic create \
+    --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_VM}-nic" \
     --resource-group "${AZ_VM_RG}" \
     --subnet "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VNET_RG}/providers/Microsoft.Network/virtualNetworks/${AZ_VNET}/subnets/${AZ_VNET_SUBNET_NAME}" \
     --public-ip-address "" \
     --network-security-group "${AZ_VM}-nsg" \
     --lb-address-pools "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VM_RG}/providers/Microsoft.Network/loadBalancers/${AZ_LB}/backendAddressPools/${AZ_VM}-backendpool" \
-    --lb-inbound-nat-rules \
-        "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VM_RG}/providers/Microsoft.Network/loadBalancers/${AZ_LB}/inboundNatRules/${AZ_VM}-ssh" \
-        "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VM_RG}/providers/Microsoft.Network/loadBalancers/${AZ_LB}/inboundNatRules/${AZ_VM}-minecraft" \
     --output none
 
-printf "Create ${AZ_VM} Azure Virtual Machine...\\n"
+printf "Assign inbound NAT rules to NIC...\\n"
+az network nic ip-config update \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
+    --resource-group "${AZ_VM_RG}" \
+    --name "ipconfig1" \
+    --nic-name "${AZ_VM}-nic" \
+    --lb-name "${AZ_LB}" \
+    --lb-inbound-nat-rules \
+        "${AZ_VM}-ssh" \
+        "${AZ_VM}-minecraft" \
+    --output none
+
+printf "Create %s Azure Virtual Machine...\\n" "${AZ_VM}"
 az vm create \
+    --location "${AZ_LOCATION}" \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_VM}" \
     --resource-group "${AZ_VM_RG}" \
     --image "UbuntuLTS" \
     --size "Standard_B2s" \
-    --accelerated-networking "true" \
     --nics "${AZ_VM}-nic" \
     --storage-sku "StandardSSD_LRS" \
     --admin-username "yandolfat" \
     --ssh-key-value "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCe0lgCF/ZKiUJnl8gbSQSKvzIiWZM8ZouxUxjmXGJIXvacmZCC/Ou7UvX5JMQFqUcYe63BSGOz93X2r4e17M++JbOR+ShloGS+4+w+wu6MAYaiVIC6/PmhSfyzFXEWuE+dLadNwJMF8ePUXqwYZntRy5Gahu1wYSkqaif3TNsDRCDYcd0viCOEmGN+NYeoNJwGQ9HIWJ29sY/BUZJWEVB0ZweTvNqwtl3bMvY/JHmEmEIYwdRcdROPEPmxcuBH81Tt2fsD9V7DYhyvz2lQPVJD++3jIZX2i9sPQj8SVJbo23xOZZykVIKU7WaztBtPPz3RdytBiyQ8sgNwKLbJX7Vv0+qY1no4xUnKwJPc5zfikje4rYxTksjIRg7igMNrCFGWZA75hb+Nm+HhQsKqVHtOIaw3P6j6slysQQ5MOQYTqg7k60yxTRGTv8Y6V45jrYWQg+vhKO4gzVTKsqrqJTRhJXU3vv//1NPW7ucNlNPCF8n0RyjXue6Y1Xr8rZv5QheLZvcHumd23pA+Z6aRA/Hd2VINy00PQz9dscOpWHpUiiu4HMPHLcLdlhaVMFr2otwB2749xHciZFCsWnprMGX6V3lVGHQ3OFfIBFz1ZVFG+eAbXmZZepdtwVJDidXDfvzAtMol/+PwVVUJgpA1a1dryyZkg9k2FbO1bSVolvmkpQ== Yves ANDOLFATTO" \
     --output none
+
 printf "Done.\\n\\n"
 
-echo -e "\e[31mSAS Token: ${sas}\e[0m"
+printf "Your Storage access key is: \"%s\"\\n" "${sas}"
+echo "${sas}" > ~/sta"${AZ_LB_DNS}""${AZ_LOCATION}"_backup-001_sas.txt

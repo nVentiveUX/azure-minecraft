@@ -17,7 +17,7 @@ STORAGE_ACCOUNT_CONTAINER=$3
 
 # Init
 TMPDIR=$(mktemp -d /tmp/backup.XXXXXX)
-BASENAME=$(basename $0)
+BASENAME=$(basename "$0")
 TIMESTAMP=$(date "+%A")
 BACKUP_FILE="${BACKUP_DIR}/full-backup-${TIMESTAMP}.tar.xz"
 LOGFILE="${LOG_DIR}/${BASENAME}.log"
@@ -32,7 +32,7 @@ write_log() {
   # Write a message to log file.
   message=$1
   timestamp=$(date "+[%Y-%m-%d %H:%M:%S.%N]")
-  echo "${timestamp} ${message}" >> ${LOGFILE}
+  echo "${timestamp} ${message}" >> "${LOGFILE}"
 }
 
 cleanup() {
@@ -76,7 +76,7 @@ fi
 
 # Final archiving
 write_log "Archive all in \"${BACKUP_FILE}\"."
-tar Jcf "${BACKUP_FILE}" ${TMPDIR} >/dev/null 2>&1 || rCodeFinalTar=$?
+tar Jcf "${BACKUP_FILE}" "${TMPDIR}" >/dev/null 2>&1 || rCodeFinalTar=$?
 if [ $rCodeFinalTar -ne 0 ]; then
   write_log "Unable to create the final archive!"
   write_log "!!!! BACKUP FAILED !!!!"

@@ -45,7 +45,7 @@ cd ~/azure-minecraft
     --rg-vm="rg-inf-minecraft-001" \
     --vm-name="vm-minecraft-001" \
     --lb-name="lb-minecraft-001" \
-    --dns-name="lebonserveur001"
+    --dns-name="lebonserveur"
 )
 ```
 
@@ -67,7 +67,7 @@ sudo reboot
 
 ```shell
 (
-STORAGE_ACCOUNT_NAME="stalebonserveur001"
+STORAGE_ACCOUNT_NAME="stalebonserveurwesteurope"
 STORAGE_SAS_TOKEN=""
 STORAGE_ACCOUNT_CONTAINER="backup-001"
 
@@ -86,7 +86,7 @@ EOF
 
 ### Play
 
-Connect on ```<dns-name>.westeurope.cloudapp.azure.com:25565```
+Connect on ```lebonserveur.westeurope.cloudapp.azure.com:25565```
 
 The full list of operator commands can be found on the Minecraft wiki:  http://minecraft.gamepedia.com/Commands#Summary_of_commands
 

@@ -26,21 +26,21 @@ apt install -y software-properties-common
 apt install -y default-jdk
 
 # Create user and install folder+
-printf "Create $USER user...\\n"
+printf "Create %s user...\\n" "$USER"
 adduser --system --no-create-home --home $INSTALL_DIR $USER
 addgroup --system $GROUP
 mkdir -pv $INSTALL_DIR
 
 # Download the server jar
-printf "Download $INSTALL_DIR/server.jar...\\n"
-wget -q `eval $SERVER_JAR_URL` -O $INSTALL_DIR/server.jar
+printf "Download %s/server.jar...\\n" "$INSTALL_DIR"
+wget -q "$(eval "$SERVER_JAR_URL")" -O $INSTALL_DIR/server.jar
 
 # Set permissions on install folder
 chown -R $USER $INSTALL_DIR
 
 # Adjust memory usage depending on VM size
 totalMem=$(free -m | awk '/Mem:/ { print $2 }')
-if [ $totalMem -lt 2048 ]; then
+if [ "$totalMem" -lt 2048 ]; then
     memoryAllocs=512m
     memoryAllocx=1g
 else
@@ -67,13 +67,13 @@ WantedBy=multi-user.target
 Alias=minecraft-server.service
 EOF
 printf "Service create to launch:"
-printf "/usr/bin/java -Xms$memoryAllocs -Xmx$memoryAllocx -jar $INSTALL_DIR/server.jar nogui\\n"
+printf "/usr/bin/java -Xms%s -Xmx%s -jar %s/server.jar nogui\\n" "$memoryAllocs" "$memoryAllocx" "$INSTALL_DIR"
 
 # Configure the server
 printf "Configure the server..."
 echo 'eula=true' | tee $INSTALL_DIR/eula.txt
 
-mojang_output="`wget -qO- $UUID_URL`"
+mojang_output="$(wget -qO- "$UUID_URL")"
 rawUUID=${mojang_output:7:32}
 UUID=${rawUUID:0:8}-${rawUUID:8:4}-${rawUUID:12:4}-${rawUUID:16:4}-${rawUUID:20:12}
 cat <<EOF | tee $INSTALL_DIR/ops.json
