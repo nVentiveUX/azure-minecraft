@@ -67,7 +67,7 @@ sudo reboot
 
 ```shell
 (
-STORAGE_ACCOUNT_NAME="stalebonserveurwesteurope"
+STORAGE_ACCOUNT_NAME="stalebonservwesteurope"
 STORAGE_SAS_TOKEN=""
 STORAGE_ACCOUNT_CONTAINER="backup-001"
 
@@ -86,7 +86,7 @@ EOF
 
 ### Play
 
-Connect on ```lebonserveur.westeurope.cloudapp.azure.com:25565```
+Connect on ```lebonserv.westeurope.cloudapp.azure.com:25565```
 
 The full list of operator commands can be found on the Minecraft wiki:  http://minecraft.gamepedia.com/Commands#Summary_of_commands
 

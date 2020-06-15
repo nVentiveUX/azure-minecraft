@@ -22,7 +22,7 @@ UUID_URL=https://api.mojang.com/users/profiles/minecraft/$1
 SERVER_JAR_URL="curl -L https://minecraft.net/en-us/download/server/ | grep -Eo \"(http|https)://[a-zA-Z0-9./?=_-]*\" | sort | uniq | grep launcher"
 
 apt update
-apt install -y software-properties-common
+apt install -y software-properties-common jq
 apt install -y default-jdk
 
 # Create user and install folder+
@@ -74,7 +74,7 @@ printf "Configure the server..."
 echo 'eula=true' | tee $INSTALL_DIR/eula.txt
 
 mojang_output="$(wget -qO- "$UUID_URL")"
-rawUUID=${mojang_output:7:32}
+rawUUID="$(echo "${mojang_output}" | jq -r '.id')"
 UUID=${rawUUID:0:8}-${rawUUID:8:4}-${rawUUID:12:4}-${rawUUID:16:4}-${rawUUID:20:12}
 cat <<EOF | tee $INSTALL_DIR/ops.json
 [
