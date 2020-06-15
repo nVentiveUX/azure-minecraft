@@ -59,9 +59,10 @@ sudo apt update && sudo apt dist-upgrade -Vy &&
 wget -O install_minecraft.sh "https://github.com/nVentiveUX/azure-minecraft/raw/master/install_minecraft.sh" &&
 chmod +x install_minecraft.sh &&
 sudo ./install_minecraft.sh "Felbarr" "2" "LeBonMonde" "0" "False" "True" "True" "True" "867832618049646" &&
-tail -f /srv/minecraft_server/logs/latest.log &&
-sudo reboot
+tail -f /srv/minecraft_server/logs/latest.log
 )
+
+sudo reboot
 ```
 ### Set-up the backup system
 
