@@ -14,7 +14,7 @@ unset ARGS
 
 AZ_SUBSCRIPTION_ID=""
 AZ_LOCATION=""
-AZ_VNET_RG=""
+AZ_SHARED_RG=""
 AZ_VNET=""
 AZ_VNET_SUBNET_NAME=""
 AZ_VNET_SUBNET=""
@@ -36,7 +36,7 @@ while true; do
         continue
     ;;
     '-g'|'--rg-vnet')
-        AZ_VNET_RG="$2"
+        AZ_SHARED_RG="$2"
         shift 2
         continue
     ;;
@@ -104,7 +104,7 @@ if [[ -z $AZ_LOCATION ]]; then
     exit 1
 fi
 
-if [[ -z $AZ_VNET_RG ]]; then
+if [[ -z $AZ_SHARED_RG ]]; then
     echo "Error: --rg-vnet is required !"
     usage
     exit 1
@@ -155,19 +155,19 @@ fi
 printf "Switch to %s subscription...\\n" "$(az account show --subscription "${AZ_SUBSCRIPTION_ID}"  --query name --output tsv)"
 az account set --subscription "${AZ_SUBSCRIPTION_ID}" --output none
 
-if ! az network vnet show --subscription "${AZ_SUBSCRIPTION_ID}" --resource-group ${AZ_VNET_RG} --name ${AZ_VNET} --output none; then
-    printf "Create %s resource group...\\n" "${AZ_VNET_RG}"
+if ! az network vnet show --subscription "${AZ_SUBSCRIPTION_ID}" --resource-group ${AZ_SHARED_RG} --name ${AZ_VNET} --output none; then
+    printf "Create %s resource group...\\n" "${AZ_SHARED_RG}"
     az group create \
         --location "${AZ_LOCATION}" \
         --subscription "${AZ_SUBSCRIPTION_ID}" \
-        --name "${AZ_VNET_RG}" \
+        --name "${AZ_SHARED_RG}" \
         --output none
 
     printf "Create a new 10.1.0.0/16 VNET named %s...\\n" "${AZ_VNET}"
     az network vnet create \
         --location "${AZ_LOCATION}" \
         --subscription "${AZ_SUBSCRIPTION_ID}" \
-        --resource-group "${AZ_VNET_RG}" \
+        --resource-group "${AZ_SHARED_RG}" \
         --name "${AZ_VNET}" \
         --address-prefix "10.1.0.0/16" \
         --output none
@@ -175,7 +175,7 @@ fi
 
 printf "Create a new %s subnet named %s...\\n" "${AZ_VNET_SUBNET}" "${AZ_VNET_SUBNET_NAME}"
 az network vnet subnet create \
-    --resource-group "${AZ_VNET_RG}" \
+    --resource-group "${AZ_SHARED_RG}" \
     --vnet-name "${AZ_VNET}" \
     --name "${AZ_VNET_SUBNET_NAME}" \
     --address-prefix "${AZ_VNET_SUBNET}" \
@@ -192,7 +192,7 @@ printf "Create sta%s%s Storage Account...\\n" "${AZ_LB_DNS}" "${AZ_LOCATION}"
 az storage account create \
     --location "${AZ_LOCATION}" \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
-    --resource-group "${AZ_VM_RG}" \
+    --resource-group "${AZ_SHARED_RG}" \
     --name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --https-only true \
     --kind StorageV2 \
@@ -325,7 +325,7 @@ az network nic create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_VM}-nic" \
     --resource-group "${AZ_VM_RG}" \
-    --subnet "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VNET_RG}/providers/Microsoft.Network/virtualNetworks/${AZ_VNET}/subnets/${AZ_VNET_SUBNET_NAME}" \
+    --subnet "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_SHARED_RG}/providers/Microsoft.Network/virtualNetworks/${AZ_VNET}/subnets/${AZ_VNET_SUBNET_NAME}" \
     --public-ip-address "" \
     --network-security-group "${AZ_VM}-nsg" \
     --lb-address-pools "/subscriptions/${AZ_SUBSCRIPTION_ID}/resourceGroups/${AZ_VM_RG}/providers/Microsoft.Network/loadBalancers/${AZ_LB}/backendAddressPools/${AZ_VM}-backendpool" \

@@ -38,7 +38,7 @@ cd ~/azure-minecraft
 ./create_vm.sh \
     --subscription="8d8af6bf-9138-4d9d-a2e6-5bff1e3044c5" \
     --location="westeurope" \
-    --rg-vnet="rg-net-shared-001" \
+    --rg-vnet="rg-shared-001" \
     --vnet-name="vnt-shared-001" \
     --subnet-name="snt-minecraft-001" \
     --subnet="10.1.0.32/29" \
