@@ -101,5 +101,5 @@ EOF
 chown $USER:$GROUP $INSTALL_DIR/server.properties
 
 systemctl daemon-reload
-systemctl enable minecraft-server |:
+systemctl enable minecraft-server && echo "Enable minecraft-server..." || echo "minecraft-server already enabled. Skipping..."
 systemctl start minecraft-server
