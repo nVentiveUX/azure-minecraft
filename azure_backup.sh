@@ -8,7 +8,7 @@ set -eu -o pipefail
 
 # Please edit according to your need.
 BACKUP_DIR="/var/backups/minecraft"
-FILES_DIR="/srv/minecraft_server"
+FILES_DIR="/srv/minecraft_server_java"
 LOG_DIR="/var/log/minecraft"
 STORAGE_ACCOUNT_NAME=$1
 STORAGE_SAS_TOKEN=$2

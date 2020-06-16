@@ -268,15 +268,26 @@ az network lb inbound-nat-rule create \
     --protocol "tcp" \
     --output none
 
-printf "Create NAT pool rules for Minecraft connection...\\n"
+printf "Create NAT pool rules for Minecraft Java connection...\\n"
 az network lb inbound-nat-rule create \
-    --name "${AZ_VM}-minecraft" \
+    --name "${AZ_VM}-minecraft-java" \
     --resource-group "${AZ_VM_RG}" \
     --lb-name "${AZ_LB}" \
     --frontend-port "25565" \
     --backend-port "25565" \
     --frontend-ip-name "${AZ_LB}-public-ip" \
     --protocol "tcp" \
+    --output none
+
+printf "Create NAT pool rules for Minecraft Bedrock connection...\\n"
+az network lb inbound-nat-rule create \
+    --name "${AZ_VM}-minecraft-bedrock" \
+    --resource-group "${AZ_VM_RG}" \
+    --lb-name "${AZ_LB}" \
+    --frontend-port "19132" \
+    --backend-port "19132" \
+    --frontend-ip-name "${AZ_LB}-public-ip" \
+    --protocol "udp" \
     --output none
 
 printf "Create NSG %s-nsg...\\n" "${AZ_VM}"
@@ -303,9 +314,9 @@ az network nsg rule create \
     --description "Allow SSH traffic from Any" \
     --output none
 
-printf "Create NSG rule to allow Minecraft...\\n"
+printf "Create NSG rule to allow Minecraft Java...\\n"
 az network nsg rule create \
-    --name "Allow_Minecraft" \
+    --name "Allow_Minecraft_Java" \
     --nsg-name "${AZ_VM}-nsg" \
     --resource-group "${AZ_VM_RG}" \
     --priority "1001" \
@@ -316,6 +327,22 @@ az network nsg rule create \
     --destination-port-ranges "25565" \
     --access "Allow" \
     --protocol "tcp" \
+    --description "Allow Minecraft traffic from Any" \
+    --output none
+
+printf "Create NSG rule to allow Minecraft Bedrock...\\n"
+az network nsg rule create \
+    --name "Allow_Minecraft_Bedrock" \
+    --nsg-name "${AZ_VM}-nsg" \
+    --resource-group "${AZ_VM_RG}" \
+    --priority "1002" \
+    --direction "Inbound" \
+    --source-address-prefixes "*" \
+    --source-port-ranges "*" \
+    --destination-address-prefixes "VirtualNetwork" \
+    --destination-port-ranges "19132" \
+    --access "Allow" \
+    --protocol "udp" \
     --description "Allow Minecraft traffic from Any" \
     --output none
 
@@ -340,7 +367,8 @@ az network nic ip-config update \
     --lb-name "${AZ_LB}" \
     --lb-inbound-nat-rules \
         "${AZ_VM}-ssh" \
-        "${AZ_VM}-minecraft" \
+        "${AZ_VM}-minecraft-java" \
+        "${AZ_VM}-minecraft-bedrock" \
     --output none
 
 printf "Create %s Azure Virtual Machine...\\n" "${AZ_VM}"

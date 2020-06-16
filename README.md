@@ -52,18 +52,30 @@ cd ~/azure-minecraft
 ### Configure the Virtual Machine
 
 * Connect using SSH on port 443
+* Install Java edition
 
 ```shell
 (
 sudo apt update && sudo apt dist-upgrade -Vy &&
-wget -O install_minecraft.sh "https://github.com/nVentiveUX/azure-minecraft/raw/master/install_minecraft.sh" &&
+wget -O install_minecraft.sh "https://github.com/nVentiveUX/azure-minecraft/raw/master/install_minecraft_java.sh" &&
 chmod +x install_minecraft.sh &&
 sudo ./install_minecraft.sh "Felbarr" "2" "LeBonMonde" "0" "False" "True" "True" "True" "867832618049646" &&
-tail -f /srv/minecraft_server/logs/latest.log
+tail -f /srv/minecraft_server_java/logs/latest.log
 )
-
-sudo reboot
 ```
+
+* Install Bedrock edition
+
+```shell
+(
+sudo apt update && sudo apt dist-upgrade -Vy &&
+wget -O install_minecraft.sh "https://github.com/nVentiveUX/azure-minecraft/raw/master/install_minecraft_bedrock.sh" &&
+chmod +x install_minecraft.sh &&
+sudo ./install_minecraft.sh "Felbarr90" "2" "LeBonMonde" "0" "False" "True" "True" "True" "33480944" &&
+journalctl -exu minecraft-server-bedrock
+)
+```
+
 ### Set-up the backup system
 
 ```shell
@@ -95,6 +107,7 @@ The full list of operator commands can be found on the Minecraft wiki:  http://m
 
 ```shell
 journalctl -exu minecraft-server
+journalctl -exu minecraft-server-bedrock
 ```
 
 ## Delete the Azure infrastructure
