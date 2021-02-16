@@ -203,7 +203,7 @@ az storage account create \
     --sku Standard_LRS \
     --output none
 
-printf "Create ${AZ_APP_STA_CNT_NAME} blob container...\\n"
+printf "Create %s blob container...\\n" "${AZ_APP_STA_CNT_NAME}"
 az storage container create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_APP_STA_CNT_NAME}" \
@@ -211,7 +211,7 @@ az storage container create \
     --public-access off \
     --output none
 
-printf "Create a ReadWriteList policy for ${AZ_APP_STA_CNT_NAME} blob container...\\n"
+printf "Create a ReadWriteList policy for %s blob container...\\n" "${AZ_APP_STA_CNT_NAME}"
 az storage container policy create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --container-name "${AZ_APP_STA_CNT_NAME}" \
@@ -222,7 +222,7 @@ az storage container policy create \
     --start "$(date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ')" \
     --output none
 
-printf "Generate SAS Token to access the ${AZ_APP_STA_CNT_NAME} blob container...\\n"
+printf "Generate SAS Token to access the %s blob container...\\n" "${AZ_APP_STA_CNT_NAME}"
 sas=$(az storage container generate-sas \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_APP_STA_CNT_NAME}" \
@@ -231,7 +231,7 @@ sas=$(az storage container generate-sas \
     --https-only \
     --output tsv)
 
-printf "Deny public access for ${AZ_APP_STA_CNT_NAME} blob container...\\n"
+printf "Deny public access for %s blob container...\\n" "${AZ_APP_STA_CNT_NAME}"
 az storage container set-permission \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_APP_STA_CNT_NAME}" \
