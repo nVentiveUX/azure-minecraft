@@ -394,4 +394,4 @@ az vm create \
 printf "Done.\\n\\n"
 
 printf "Your Storage access key is: \"%s\"\\n" "${sas}"
-echo "${sas}" > ~/sta"${AZ_LB_DNS}""${AZ_LOCATION}"_backup-001_sas.txt
+echo "${sas}" > ~/sta"${AZ_LB_DNS}""${AZ_LOCATION}"_${AZ_APP_STA_CNT_NAME}_sas.txt
