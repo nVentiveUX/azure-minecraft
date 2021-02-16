@@ -175,6 +175,7 @@ fi
 
 printf "Create a new %s subnet named %s...\\n" "${AZ_VNET_SUBNET}" "${AZ_VNET_SUBNET_NAME}"
 az network vnet subnet create \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --resource-group "${AZ_SHARED_RG}" \
     --vnet-name "${AZ_VNET}" \
     --name "${AZ_VNET_SUBNET_NAME}" \
@@ -203,6 +204,7 @@ az storage account create \
 
 printf "Create backup-001 blob container...\\n"
 az storage container create \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name backup-001 \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --public-access off \
@@ -210,6 +212,7 @@ az storage container create \
 
 printf "Create a ReadWriteList policy for backup-001 blob container...\\n"
 az storage container policy create \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --container-name backup-001 \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --name rwl \
@@ -220,6 +223,7 @@ az storage container policy create \
 
 printf "Generate SAS Token to access the backup-001 blob container...\\n"
 sas=$(az storage container generate-sas \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name backup-001 \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --policy-name rwl \
@@ -228,6 +232,7 @@ sas=$(az storage container generate-sas \
 
 printf "Deny public access for backup-001 blob container...\\n"
 az storage container set-permission \
+    --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name backup-001 \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --public-access off \
