@@ -216,8 +216,8 @@ az storage container policy create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --container-name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
-    --name rwl \
-    --permissions rwl \
+    --name "rwl" \
+    --permissions "rwl" \
     --expiry "$(date -u -d "100 years" '+%Y-%m-%dT%H:%MZ')" \
     --start "$(date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ')" \
     --output none
@@ -227,7 +227,7 @@ sas=$(az storage container generate-sas \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
     --name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
-    --policy-name rwl \
+    --policy-name "rwl" \
     --https-only \
     --output tsv)
 
