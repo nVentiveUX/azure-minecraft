@@ -22,6 +22,7 @@ AZ_VM_RG=""
 AZ_VM=""
 AZ_LB=""
 AZ_LB_DNS=""
+AZ_APP_STA_CNT_NAME="backup-001"
 
 while true; do
   case "$1" in
@@ -202,18 +203,18 @@ az storage account create \
     --sku Standard_LRS \
     --output none
 
-printf "Create backup-001 blob container...\\n"
+printf "Create ${AZ_APP_STA_CNT_NAME} blob container...\\n"
 az storage container create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
-    --name backup-001 \
+    --name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --public-access off \
     --output none
 
-printf "Create a ReadWriteList policy for backup-001 blob container...\\n"
+printf "Create a ReadWriteList policy for ${AZ_APP_STA_CNT_NAME} blob container...\\n"
 az storage container policy create \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
-    --container-name backup-001 \
+    --container-name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --name rwl \
     --permissions rwl \
@@ -221,19 +222,19 @@ az storage container policy create \
     --start "$(date -u -d "-1 days" '+%Y-%m-%dT%H:%MZ')" \
     --output none
 
-printf "Generate SAS Token to access the backup-001 blob container...\\n"
+printf "Generate SAS Token to access the ${AZ_APP_STA_CNT_NAME} blob container...\\n"
 sas=$(az storage container generate-sas \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
-    --name backup-001 \
+    --name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --policy-name rwl \
     --https-only \
     --output tsv)
 
-printf "Deny public access for backup-001 blob container...\\n"
+printf "Deny public access for ${AZ_APP_STA_CNT_NAME} blob container...\\n"
 az storage container set-permission \
     --subscription "${AZ_SUBSCRIPTION_ID}" \
-    --name backup-001 \
+    --name "${AZ_APP_STA_CNT_NAME}" \
     --account-name "sta${AZ_LB_DNS}${AZ_LOCATION}" \
     --public-access off \
     --output none
